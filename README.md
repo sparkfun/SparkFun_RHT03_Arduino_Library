@@ -22,7 +22,7 @@ Documentation
 --------------
 
 * **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
-* **[Product Repository](https://github.com/sparkfun/ADXL345_Breakout)** - Main repository (including hardware files) for the SparkFun Triple Axis Accelerometer Breakout - ADXL345.
+* **[RHT03 Datasheet](http://cdn.sparkfun.com/datasheets/Sensors/Weather/RHT03.pdf)** - Technical details
 
 Products that use this Library 
 ---------------------------------
