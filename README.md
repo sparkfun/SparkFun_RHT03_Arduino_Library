@@ -14,9 +14,9 @@ The RHT03 (also known by DHT-22) is a low cost humidity and temperature sensor w
 Repository Contents
 -------------------
 
-* **/examples** - Example sketches for the library. Run these from the Arduino IDE. 
-* **/src** - Source files for the library (**SparkFun_ADXL345.cpp** and **SparkFun_ADXL345.h**).
-* **keywords.txt** - Keywords from this library that will be highlighted in the Arduino IDE. 
+* **/examples** - Example sketches for the library. Run these from the Arduino IDE.
+* **/src** - Source files for the library
+* **keywords.txt** - Keywords from this library that will be highlighted in the Arduino IDE
 
 Documentation
 --------------
