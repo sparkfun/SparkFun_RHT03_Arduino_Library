@@ -28,7 +28,7 @@ void RHT03::begin(int dataPin)
 
 float RHT03::tempC()
 {
-    return (float) _temperature / 10.0;
+    return (float)_temperature / 10.0;
 }
 
 float RHT03::tempF()
@@ -38,7 +38,7 @@ float RHT03::tempF()
 
 float RHT03::humidity()
 {
-    return (float) _humidity / 10.0;
+    return (float)_humidity / 10.0;
 }
 
 int RHT03::update()
@@ -47,9 +47,9 @@ int RHT03::update()
     unsigned long stops[40] = {0};
     unsigned int highTime, lowTime;
     byte dataBytes[5] = {0};
-    
+
     noInterrupts();
-    
+
     // Begin state: input HIGH
     pinMode(_dataPin, INPUT_PULLUP);
     delay(100);
@@ -60,45 +60,53 @@ int RHT03::update()
     pinMode(_dataPin, INPUT_PULLUP);
     delayMicroseconds(20);
     // Sensor should pull data pin low 80us, then pull back up
-    if (! waitForRHT(LOW, 1000) )
+    if (!waitForRHT(LOW, 1000))
         return errorExit(0);
-    if (! waitForRHT(HIGH, 1000) )
+    if (!waitForRHT(HIGH, 1000))
         return errorExit(0);
-    
+
     // Sensor transmits 40 bytes (16 rh, 16 temp, 8 checksum)
     // Each byte starts with a ~50us LOW then a HIGH pulse. The duration of the
     // HIGH pulse determines the value of the bit.
     // LOW: 26-28us (<LOW duration)
     // HIGH: 70us (>LOW duration)
-    for (int i=0; i<40; i++)
+    for (int i = 0; i < 40; i++)
     {
-        if (! waitForRHT(LOW, 1000) )
+        if (!waitForRHT(LOW, 1000))
             return errorExit(-i);
         marks[i] = micros();
-        if (! waitForRHT(HIGH, 1000) )
+        if (!waitForRHT(HIGH, 1000))
             return errorExit(-i);
         stops[i] = micros();
     }
-    if (! waitForRHT(LOW, 1000) )
+    if (!waitForRHT(LOW, 1000))
         return errorExit(-41);
     marks[40] = micros();
-    
+
     interrupts();
-    
-    for (int i=0; i<40; i++)
+
+    for (int i = 0; i < 40; i++)
     {
         lowTime = stops[i] - marks[i];
         highTime = marks[i + 1] - stops[i];
         if (highTime > lowTime)
         {
-            dataBytes[i/8] |= (1<<(7 - i%8));
+            dataBytes[i / 8] |= (1 << (7 - i % 8));
         }
     }
-    
+
     if (checksum(dataBytes[CHECKSUM], dataBytes, 4))
     {
-        _humidity = ((uint16_t) dataBytes[HUMIDITY_H] << 8) | dataBytes[HUMIDITY_L];
-        _temperature = ((uint16_t) dataBytes[TEMP_H] << 8) | dataBytes[TEMP_L];
+        _humidity = ((uint16_t)dataBytes[HUMIDITY_H] << 8) | dataBytes[HUMIDITY_L];
+        _temperature = ((uint16_t)dataBytes[TEMP_H] << 8) | dataBytes[TEMP_L];
+        // mod for negative values
+        bool sign;
+        sign = _temperature & 0x8000;
+        if (sign)
+        {
+            _temperature = -(_temperature & 0x7FFF);
+        }
+        // end of mod
         return 1;
     }
     else
@@ -107,16 +115,16 @@ int RHT03::update()
     }
 }
 
-bool RHT03::checksum(byte check, byte * data, unsigned int datalen)
+bool RHT03::checksum(byte check, byte *data, unsigned int datalen)
 {
     byte sum = 0;
-    for (int i=0; i<datalen; i++)
+    for (int i = 0; i < datalen; i++)
     {
         sum = sum + data[i];
     }
     if (sum == check)
         return true;
-    
+
     return false;
 }
 
@@ -131,7 +139,7 @@ bool RHT03::waitForRHT(int pinState, unsigned int timeout)
     unsigned int counter = 0;
     while ((digitalRead(_dataPin) != pinState) && (counter++ < timeout))
         delayMicroseconds(1);
-    
+
     if (counter >= timeout)
         return false;
     else
